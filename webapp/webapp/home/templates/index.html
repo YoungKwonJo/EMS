@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %} ElasticSearch Dashboard {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+  <div id="elasticsearch_cluster_info_modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+          </button>
+          <h4 class="modal-title" id="myModalLabel">NEW CLUSTER</h4>
+        </div>
+
+        <div class="modal-body">
+          <form class="form-horizontal form-label-left" data-parsley-validate>
+            <div class="item form-group">
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">URL <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input id="es_cluster_url" data-parsley-maxlength="255" data-parsley-type="url" data-parsley-trigger="focusout" class="form-control col-md-7 col-xs-12" name="name" placeholder="http://elastic.cluster.com:9200" required="required" type="text">
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="javascript:save_changes();">Save changes</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="elasticsearch_cluster_remove_modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+          </button>
+          <h4 class="modal-title" id="myModalLabel">REMOVE CLUSTER</h4>
+        </div>
+
+        <div class="modal-body">
+          Delete this cluster ?
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger">Delete</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>ElasticSearch Clusters</h1>
+    </section>
+
+    <section class="content">
+      <p align="right">
+				<button type="button" class="btn btn-success btn-xs" onclick="javascript:add_elasticsearch_cluster();"><i class="fa fa-plus"></i> NEW CLUSTER</button>
+			</p>
+
+      <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">Storage Used Ratio</h3>
+            </div>
+            <div class="box-body">
+              <iframe src="{{ grafana_url }}" allowtransparency="true" frameborder="0" scrolling="0" width="100%" height="500px"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Elasticsearh Cluster List</h3>
+            </div>
+            <div class="box-body">
+              <table id="elasticsearch_cluster_list" class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>URL</th>
+                    <th>Health</th>
+                    <th>Version</th>
+                    <th>Storage Usage</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for cluster in cluster_list %}
+                  <tr>
+                    <th scope="row">{{ cluster.count }}</th>
+                    <td>{{ cluster.url }} <a href="/monitoring/{{ cluster.id }}"><span class="label label-info">MONITORING</span></a></td>
+                    <td><span class="label {{ cluster.health_color }}">{{ cluster.health.upper() }}</span></td>
+                    <td>{{ cluster.version }}</td>
+                    <td>
+                      <input type="text" class="knob" value="{{ cluster.storage_usage }}" data-width="30" data-height="30" data-fgColor="{{ cluster.storage_usage_color }}">
+                    </td>
+                    <td>
+                      <button type="button" class="btn btn-danger btn-xs" onclick="javascript:remove_elasticsearch_cluster('{{ cluster.id }}');">Remove</button>
+                      <button type="button" class="btn btn-warning btn-xs" onclick="javascript:modify_elasticsearch_cluster('{{ cluster.id }}');">Modify</button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}
+  {{ super()}}
+  <!-- Chart.js -->
+
+
+
+  <script type="text/javascript">
+
+  $(function() {
+        $(".knob").knob();
+  });
+
+  function remove_elasticsearch_cluster(id){
+    $('#elasticsearch_cluster_remove_modal').modal();
+    $('#elasticsearch_cluster_remove_modal').click(
+      function(){
+        $.ajax( {
+          type: 'DELETE',
+          url: '/api/v1/elasticsearch/clusters/' + id,
+          async: true,
+          success:function(){
+            location.reload();
+          },
+          error:function(response){
+
+            $.notify({
+              message : "삭제에 실패 했습니다."
+            },{
+              type: 'danger',
+              delay: 5000,
+              newest_on_top: true,
+              animate: {
+                enter: 'animated fadeInDown',
+                exit: 'animated fadeOutUp'
+              }
+            });
+          }
+        } )
+      }
+    );
+  }
+
+  function modify_elasticsearch_cluster(elasticsearch_cluster_url){
+    $('#es_cluster_url').val(elasticsearch_cluster_url);
+    $('#elasticsearch_cluster_info_modal').modal();
+  }
+
+  function add_elasticsearch_cluster(){
+    $('#es_cluster_url').val('');
+    $('#elasticsearch_cluster_info_modal').modal();
+  }
+
+  function save_changes(){
+
+    if ( ! ($('#es_cluster_url').parsley().isValid()) ) {
+      $.notify({
+          message : "URL elements should be a valid url"
+      },{
+        type: 'danger',
+        delay: 3000,
+        newest_on_top: true,
+        z_index: 2000,
+        animate: {
+          enter: 'animated fadeInDown',
+          exit: 'animated fadeOutUp'
+        }
+      });
+      return 0;
+    }
+
+    var es_cluster_url = $('#es_cluster_url').val();
+
+    if (es_cluster_url == "") {
+      $.notify({
+          message : "URL elements can't be blank"
+      },{
+        type: 'danger',
+        delay: 3000,
+        newest_on_top: true,
+        z_index: 2000,
+        animate: {
+          enter: 'animated fadeInDown',
+          exit: 'animated fadeOutUp'
+        }
+      });
+      return 0;
+    }
+
+    $.ajax( {
+      type: 'POST',
+      url: '/api/v1/elasticsearch/clusters',
+      contentType: 'application/json',
+      async: true,
+      data: JSON.stringify(
+        {
+          "es_cluster_url" : es_cluster_url
+        }
+      ),
+      success:function(response){
+        location.reload();
+      },
+      error:function(response){
+        $.notify({
+          message : "변경에 실패 했습니다."
+        },{
+          type: 'danger',
+          delay: 5000,
+          newest_on_top: true,
+          z_index: 2000,
+          animate: {
+            enter: 'animated fadeInDown',
+            exit: 'animated fadeOutUp'
+          }
+        });
+      }
+    } );
+  }
+  </script>
+
+{% endblock javascripts %}

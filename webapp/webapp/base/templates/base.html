@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head %}
+      {% block meta %}
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!-- Meta, title, CSS, favicons, etc. -->
+        <link rel="shortcut icon" href="#" />
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      {% endblock meta %}
+
+      <title>EMS</title>
+
+      {% block stylesheets %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/font-awesome/css/font-awesome.min.css') }}">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/Ionicons/css/ionicons.min.css') }}">
+        <!-- Theme style -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/admin-lte/dist/css/AdminLTE.min.css') }}">
+        <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
+            page. However, you can choose any other skin. Make sure you
+            apply the skin class to the body tag so the changes take effect. -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/admin-lte/dist/css/skins/skin-black.min.css') }}">
+          <!-- Bootstrap -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/animate.css/animate.css') }}">
+      {% endblock stylesheets %}
+    {% endblock head %}
+  </head>
+
+  <body class="hold-transition skin-black layout-top-nav">
+    {% block body %}
+      <div class="wrapper">
+        <header class="main-header">
+          <nav class="navbar navbar-static-top">
+            <div class="container">
+              <div class="navbar-header">
+                <a href="/" class="navbar-brand"><b>E</b>lasticsearch <b>M</b>onitoring <b>S</b>ystem</a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                  <i class="fa fa-bars"></i>
+                </button>
+              </div>
+              
+            </div>
+          </nav>
+        </header>
+
+        <div class="content-wrapper">
+          <div class="container">
+            {% block content %}
+              <!-- {{ content }} -->
+            {% endblock content %}
+          </div>
+        </div>
+      </div>
+
+      {% block javascripts %}
+
+        <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+        <!-- Bootstrap 3.3.7 -->
+        <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <!-- SlimScroll -->
+        <script src="{{ url_for('static', filename='bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
+        <!-- FastClick -->
+        <script src="{{ url_for('static', filename='bower_components/fastclick/lib/fastclick.js') }}"></script>
+        <!-- AdminLTE App -->
+        <script src="{{ url_for('static', filename='bower_components/admin-lte/dist/js/adminlte.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='bower_components/parsleyjs/dist/parsley.min.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='bower_components/remarkable-bootstrap-notify/dist/bootstrap-notify.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='bower_components/jquery-knob/js/jquery.knob.js') }}"></script>
+      {% endblock %}
+    {% endblock body %}
+  </body>
+</html>

@@ -1,0 +1,5 @@
+flask
+flask_sqlalchemy
+json
+urlparse
+urllib3
