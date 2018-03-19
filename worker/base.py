@@ -58,7 +58,7 @@ influxdb_client = InfluxDBClient(influxdb_host,
                                 influxdb_database)
 
 influxdb_client.create_database(influxdb_database)
-influxdb_client.create_retention_policy("ems_retention_policy", "1d", 3, default=True)
+influxdb_client.create_retention_policy("ems_retention_policy", "30d", 3, default=True)
 
 class ElasticSearchClusterHealthHelper(SeriesHelper):
     class Meta:

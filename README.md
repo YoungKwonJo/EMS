@@ -1,7 +1,6 @@
 # EMS (Elasticsearch Monitoring System)
 
 ## About
-
 EMS is a system that monitors an Elasticsearch cluster, particularly one or more clusters that can monitor and manage the list.
 
 ## Version
@@ -20,19 +19,16 @@ EMS is a system that monitors an Elasticsearch cluster, particularly one or more
 ## Requirements
 
 ### Backend
-
 1. Grafana
 2. InfluxDB
 3. MySQL
 
 ### Python Modules
-
 ```
 pip install -r requirements.txt
 ```
 
 ## Architecture
-
 EMS is consist of two main modules, one is webapp, and the other is metric worker.
 ![ems_arch](doc/ems_arch.png)
 
@@ -44,10 +40,14 @@ git clone git@github.com:alden-kang/EMS.git
 ```
 
 ### Grafana Templates Import
+Before run EMS, You have to import grafana templates. Files that should be imported are below.
 ```
 doc/ElasticSearch_Disk_Used_Ratio_Overall.json.json
 doc/ElasticSearch_Monitoring.json
 ```
+
+### ETC
+Mysql Table and InfluxDB Table are created by webapp and worker, so you don't need to create them.
 
 ## Configuration
 
@@ -74,7 +74,7 @@ class ProductionConfig(Config):
 	DEBUG = False
 	SQLALCHEMY_DATABASE_URI = "mysql://username:passwd@your_production_db/database_name"
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
-  GRAFANA_HOST="your_production_grafana_url:3000"
+	GRAFANA_HOST="your_production_grafana_url:3000"
 
 	INFLUXDB_HOST = "your_production_influxdb"
 	INFLUXDB_PORT = 8086
