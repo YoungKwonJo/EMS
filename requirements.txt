@@ -1,5 +1,10 @@
 flask
 flask_sqlalchemy
+flask_script
 json
 urlparse
 urllib3
+sqlalchemy
+logging
+ConfigParser
+threading
